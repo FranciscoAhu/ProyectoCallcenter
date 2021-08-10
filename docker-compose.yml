@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  db:
+    container_name: db-callcenter
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    volumes:
+      - $PWD/db-data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: callcenter_db
+      MYSQL_USER: callcenter
+      MYSQL_PASSWORD: 123456
+    networks:
+      - net-callcenter
+  web:
+    container_name: callcenter-web
+    depends_on:
+      - db
+    ports:
+      - "8080:80"
+    volumes:
+      - "./web:/var/www/html"
+      - "./httpd.conf:/etc/httpd/conf/httpd.conf"
+    image: laravel-php8
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - net-callcenter
+networks:
+  net-callcenter:
+    
